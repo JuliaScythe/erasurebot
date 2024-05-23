@@ -5,19 +5,19 @@ from datetime import datetime, timedelta
 import os
 
 # The message to watch for reactions
-WATCHED_MESSAGE_ID = 1243160802014269461
+WATCHED_MESSAGE_ID = 1190055059837427722
 
 # The first role to be given, upon reacting to the message
-GIVEN_ROLE_TIER1_ID = 1243160838593056808
+GIVEN_ROLE_TIER1_ID = 1243240134909100082
 
 # The second role to be given, upon having the first role and being in the server for WAITTIME mins
-GIVEN_ROLE_TIER2_ID = 1243211172011049020
+GIVEN_ROLE_TIER2_ID = 1226488470181253220
 
 # Channel to print messages to, and guild to join for role data
-DEBUG_CHANNEL = 1243218823059083286
-GUILD_ID = 1243159672362631200
+DEBUG_CHANNEL = 1243239439266877570
+GUILD_ID = 496183179510677505
 
-WAITTIME = 1440 # 1 day = 1440 mins
+WAITTIME = 1 # 1 day = 1440 mins
 
 intents = discord.Intents.default()
 intents.reactions = True # We want to listen for reactions
