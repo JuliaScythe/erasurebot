@@ -17,7 +17,7 @@ GIVEN_ROLE_TIER2_ID = 1226488470181253220
 DEBUG_CHANNEL = 1243239439266877570
 GUILD_ID = 496183179510677505
 
-WAITTIME = 1 # 1 day = 1440 mins
+WAITTIME = 1440 # 1 day = 1440 mins
 
 intents = discord.Intents.default()
 intents.reactions = True # We want to listen for reactions
