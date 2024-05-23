@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import os
 
 # The message to watch for reactions
-WATCHED_MESSAGE_ID = 1190055059837427722
+WATCHED_MESSAGE_ID = 1243247452765552752
 
 # The first role to be given, upon reacting to the message
 GIVEN_ROLE_TIER1_ID = 1243240134909100082
