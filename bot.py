@@ -1,7 +1,8 @@
-from discord.ext import tasks
 import discord
-from  datetime import datetime, timedelta
-import asyncio
+from discord.ext import tasks
+
+from datetime import datetime, timedelta
+import os
 
 # The message to watch for reactions
 WATCHED_MESSAGE_ID = 1243160802014269461
@@ -69,8 +70,9 @@ class ErasureClient(discord.Client):
 client = ErasureClient(intents=intents)
 
 def main():
-    #client.loop.create_task(check_tier2())
-    client.run('MTI0MzE1OTc1OTgyNjMyNTUxNQ.GAZ_ez.W0TbEH2KTe6OuA_0-zyHi3r7Sai2b_uyk6fHPg')
+    with open('secret.token', 'r') as file:
+        token = file.read().rstrip()
+    client.run(token)
 
 
 if __name__=="__main__":
