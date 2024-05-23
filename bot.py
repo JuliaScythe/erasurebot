@@ -37,7 +37,7 @@ class ErasureClient(discord.Client):
 
         if member.get_role(GIVEN_ROLE_TIER1_ID) == None and member.get_role(GIVEN_ROLE_TIER2_ID) == None: # If they don't already have the role, or the t2 version...
             role = self.guild.get_role(GIVEN_ROLE_TIER1_ID)
-            await self.debug_message("added role to " + member.display_name)
+            # await self.debug_message("added role to " + member.display_name)
             await member.add_roles(role) # ...give it to them
 
     async def on_ready(self):
@@ -47,16 +47,15 @@ class ErasureClient(discord.Client):
         
     @discord.ext.tasks.loop(minutes=1)
     async def check_tier2(self):
-        await self.debug_message("running job!!")
+        # await self.debug_message("running job!!")
         # Get all the users with the tier1 role...
         t1_members = self.guild.get_role(GIVEN_ROLE_TIER1_ID).members
-        print(str(t1_members))
         for member in t1_members:
-            await self.debug_message("for user " + member.display_name + "   " + str(member.joined_at))
+            # await self.debug_message("for user " + member.display_name + "   " + str(member.joined_at))
             if datetime.now(member.joined_at.tzinfo) - timedelta(minutes=WAITTIME) > member.joined_at:
                 await member.add_roles(self.guild.get_role(GIVEN_ROLE_TIER2_ID))
                 await member.remove_roles(self.guild.get_role(GIVEN_ROLE_TIER1_ID))
-                await self.debug_message("updated role for " + member.display_name)
+                # await self.debug_message("updated role for " + member.display_name)
 
     @check_tier2.before_loop
     async def before_check_tier2(self):
