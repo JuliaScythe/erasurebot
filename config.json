@@ -1,0 +1,21 @@
+{
+    "version": "revision 3",
+    "debug": {
+        "watched_message": 1243160802014269461,
+        "given_role_t1": 1243160838593056808,
+        "given_role_t2": 1243211172011049020,
+        "debug_channel": 1243218823059083286,
+        "guild_id": 1243159672362631200,
+        "automatic_role_t2_waittime": 1440,
+        "automatic_role_t2": false
+    },
+    "live": {
+        "watched_message": 1243247452765552752,
+        "given_role_t1": 1243240134909100082,
+        "given_role_t2": 1226488470181253220,
+        "debug_channel": 1243239439266877570,
+        "guild_id": 496183179510677505,
+        "automatic_role_t2_waittime": 1440,
+        "automatic_role_t2": false
+    }
+}
