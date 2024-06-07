@@ -5,7 +5,7 @@ from discord import app_commands
 from datetime import datetime, timedelta
 import os, json
 
-DEBUG = True
+DEBUG = False
 VERSION = -1
 config = None
 
