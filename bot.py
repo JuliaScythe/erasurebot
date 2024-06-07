@@ -1,5 +1,6 @@
 import discord
 from discord.ext import tasks
+from discord import app_commands
 
 from datetime import datetime, timedelta
 import os, json
@@ -27,30 +28,50 @@ class ErasureClient(discord.Client):
         member = event.member
 
         if member.get_role(config['given_role_t1']) == None and member.get_role(config['given_role_t2']) == None: # If they don't already have the role, or the t2 version...
-            role = self.guild.get_role(config['given_role_t1'])
+            #role = self.guild.get_role(config['given_role_t1'])
             # await self.debug_message("added role to " + member.display_name)
-            await member.add_roles(role) # ...give it to them
+            #await member.add_roles(role) # ...give it to them
+            await self.grant_role(member, config['given_role_t1'])
 
     async def on_ready(self):
         self.guild = self.get_guild(config['guild_id'])
         channel = self.get_channel(config['debug_channel'])
-        await channel.send("Booting ErasureOS...")
+        version_str = 'v'+VERSION
+        if DEBUG:
+            version_str += ' [DEBUG]'
+        await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
     @discord.ext.tasks.loop(minutes=1)
     async def check_tier2(self):
         # Get all the users with the tier1 role...
         t1_members = self.guild.get_role(config['given_role_t1']).members
         for member in t1_members:
-            # await self.debug_message("for user " + member.display_name + "   " + str(member.joined_at))
             if datetime.now(member.joined_at.tzinfo) - timedelta(minutes=config['automatic_role_t2_waittime']) > member.joined_at:
-                await member.add_roles(self.guild.get_role(config['given_role_t2']))
-                await member.remove_roles(self.guild.get_role(config['given_role_t1']))
-                # await self.debug_message("updated role for " + member.display_name)
+                self.verify_user(self, member)
 
     @check_tier2.before_loop
     async def before_check_tier2(self):
         await self.wait_until_ready()
+
+    async def verify_user(self, member):
+        if (await self.grant_role(member, config['given_role_t2'])):
+            await self.remove_role(member, config['given_role_t1'])
         
+    async def grant_role(self, member, role_id):
+        try:
+            await member.add_roles(self.guild.get_role(role_id))
+        except Exception as ex:
+            await self.debug_message(f"<@409758119145635851> failed to grant role {role_id} to {member.display_name}:\n {ex}")
+            return False
+        return True
+    
+    async def remove_role(self, member, role_id):
+        try:
+            await member.remove_roles(self.guild.get_role(role_id))
+        except Exception as ex:
+            await self.debug_message(f"<@409758119145635851> failed to remove role {role_id} from {member.display_name}:\n {ex}")
+            return False
+        return True
 
     async def setup_hook(self) -> None:
         if config['automatic_role_t2']:
@@ -60,7 +81,7 @@ class ErasureClient(discord.Client):
 client = ErasureClient(intents=intents)
 
 def main():
-    global config
+    global config, VERSION
 
     with open('secret.token', 'r') as file:
         token = file.read().rstrip()
