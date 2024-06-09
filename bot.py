@@ -17,6 +17,10 @@ intents.members = True
 
 
 class ErasureClient(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super(ErasureClient, self).__init__(*args, **kwargs)
+        self.tree = discord.app_commands.CommandTree(self)
+
     async def debug_message(self, message):
         channel = self.get_channel(config['debug_channel'])
         await channel.send(message)
@@ -35,6 +39,10 @@ class ErasureClient(discord.Client):
 
     async def on_ready(self):
         self.guild = self.get_guild(config['guild_id'])
+        verify_command = app_commands.ContextMenu(name='Verify User', callback=self.verify)
+        self.tree.add_command(verify_command, guild=self.guild)
+        self.tree.copy_global_to(guild=self.guild)
+        await self.tree.sync(guild=self.guild)
         channel = self.get_channel(config['debug_channel'])
         version_str = 'v'+VERSION
         if DEBUG:
@@ -55,7 +63,9 @@ class ErasureClient(discord.Client):
 
     async def verify_user(self, member):
         if (await self.grant_role(member, config['given_role_t2'])):
-            await self.remove_role(member, config['given_role_t1'])
+            return await self.remove_role(member, config['given_role_t1'])
+        else:
+            return False
         
     async def grant_role(self, member, role_id):
         try:
@@ -77,6 +87,18 @@ class ErasureClient(discord.Client):
         if config['automatic_role_t2']:
             self.check_tier2.start()
 
+    async def verify(self, interaction: discord.Interaction, member: discord.Member):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        if member.get_role(config['given_role_t2']) != None:
+            await interaction.response.send_message(f"<:i_know_what_you_are:1150490164909592587> {member.display_name} is already verified!", ephemeral=True)
+            return
+        else:
+            if await self.verify_user(member):
+                await interaction.response.send_message(f"<:yeslord:1172009353981734962> Verified {member.display_name} successfully.", ephemeral=True)
+            else:
+                await interaction.response.send_message(f"<:salamislices:1150434195538182285> Failed to verify {member.display_name}, see log for details.", ephemeral=True)
 
 client = ErasureClient(intents=intents)
 
