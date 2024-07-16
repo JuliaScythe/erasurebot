@@ -14,12 +14,14 @@ WAITTIME = 1440 # 1 day = 1440 mins
 intents = discord.Intents.default()
 intents.reactions = True # We want to listen for reactions
 intents.members = True
-
+intents.messages = True # Not message_content
 
 class ErasureClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super(ErasureClient, self).__init__(*args, **kwargs)
         self.tree = discord.app_commands.CommandTree(self)
+        self.automute = False
+        self.automute_channel = None
 
     async def debug_message(self, message):
         channel = self.get_channel(config['debug_channel'])
@@ -37,10 +39,32 @@ class ErasureClient(discord.Client):
             #await member.add_roles(role) # ...give it to them
             await self.grant_role(member, config['given_role_t1'])
 
+    async def on_message(self, event):
+        if not self.automute:
+            return
+        if event.author == client.user:
+            return
+        print(event.channel.id)
+        if event.channel.id == self.automute_channel:
+            try:
+                await event.author.timeout(timedelta(hours=1))
+                await event.add_reaction('🌩')
+            except discord.errors.Forbidden:
+                pass
+    
+
     async def on_ready(self):
         self.guild = self.get_guild(config['guild_id'])
+
         verify_command = app_commands.ContextMenu(name='Verify User', callback=self.verify)
         self.tree.add_command(verify_command, guild=self.guild)
+
+        automute_command = app_commands.Command(name='enable_automute', description="Enables automute in this channel", callback=self.enable_automute)
+        self.tree.add_command(automute_command, guild=self.guild)
+
+        remove_automute_command = app_commands.Command(name='disable_automute', description="Disables automute in this channel", callback=self.disable_automute)
+        self.tree.add_command(remove_automute_command, guild=self.guild)
+
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
         channel = self.get_channel(config['debug_channel'])
@@ -49,6 +73,22 @@ class ErasureClient(discord.Client):
             version_str += ' [DEBUG]'
         await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
+    async def enable_automute(self, interaction: discord.Interaction):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        self.automute = True
+        self.automute_channel = interaction.channel_id
+        await interaction.response.send_message(":cloud_lightning:")
+
+    async def disable_automute(self, interaction: discord.Interaction):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        self.automute = False
+        self.automute_channel = None
+        await interaction.response.send_message(":sun:")
+
     @discord.ext.tasks.loop(minutes=1)
     async def check_tier2(self):
         # Get all the users with the tier1 role...
