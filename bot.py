@@ -3,7 +3,7 @@ from discord.ext import tasks
 from discord import app_commands
 
 from datetime import datetime, timedelta
-import os, json
+import os, json, copy
 
 DEBUG = False
 VERSION = -1
@@ -16,12 +16,27 @@ intents.reactions = True # We want to listen for reactions
 intents.members = True
 intents.messages = True # Not message_content
 
+initial_count = {'positive': 0, 'negative': 0, 'exceptions': {}}
+count = copy.deepcopy(initial_count)
+try:
+    with open('grube.json', 'r') as f:
+        count = json.load(f)
+except:
+    pass # ignored: file not found or could not be read
+
 class ErasureClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super(ErasureClient, self).__init__(*args, **kwargs)
         self.tree = discord.app_commands.CommandTree(self)
         self.automute = False
         self.automute_channel = None
+
+    def save_count(self):
+        try:
+            with open('grube.json', 'w') as f:
+                json.dump(count, f)
+        except:
+            pass
 
     async def debug_message(self, message):
         channel = self.get_channel(config['debug_channel'])
@@ -40,19 +55,28 @@ class ErasureClient(discord.Client):
             await self.grant_role(member, config['given_role_t1'])
 
     async def on_message(self, event):
-        if not self.automute:
-            return
         if event.author == client.user:
             return
-        print(event.channel.id)
         if event.channel.id == self.automute_channel:
+            if not self.automute:
+                return
             try:
                 await event.author.timeout(timedelta(hours=1))
                 await event.add_reaction('🌩')
-            except discord.errors.Forbidden:
-                pass
+            except discord.errors.Forbidden as e:
+                print(e)
+        if event.channel.id == config['grube_channel']:
+            if len(event.stickers) == 1:
+                sticker = event.stickers[0]
+                if sticker.name == config['sticker_names']['positive']:
+                    count['positive'] += 1
+                elif sticker.name == config['sticker_names']['negative']:
+                    count['negative'] += 1
+                else:
+                    new_val = count['exceptions'].get(sticker.url, 0) + 1
+                    count['exceptions'][sticker.url] = new_val
+            self.save_count()
     
-
     async def on_ready(self):
         self.guild = self.get_guild(config['guild_id'])
 
@@ -64,6 +88,12 @@ class ErasureClient(discord.Client):
 
         remove_automute_command = app_commands.Command(name='disable_automute', description="Disables automute in this channel", callback=self.disable_automute)
         self.tree.add_command(remove_automute_command, guild=self.guild)
+
+        grube_command = app_commands.Command(name='grube_stats', description="THE TOWER STANDS TALL", callback=self.grube_stats)
+        self.tree.add_command(grube_command, guild=self.guild)
+
+        reset_grube_command = app_commands.Command(name='reset_stats', description="THE TOWER SHALL FALL", callback=self.reset_stats)
+        self.tree.add_command(reset_grube_command, guild=self.guild)
 
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
@@ -88,6 +118,31 @@ class ErasureClient(discord.Client):
         self.automute = False
         self.automute_channel = None
         await interaction.response.send_message(":sun:")
+    
+    async def grube_stats(self, interaction: discord.Interaction, flavour: str="THE TOWER STANDS TALL"):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        log = f"""```
+DIS OS REPORT {datetime.now().day:02}/{datetime.now().month:02}/10{datetime.now().year}
+RECIEVING GRUBE DATA...
+
+{flavour}
+POSITIVE: {count['positive']}
+NEGATIVE: {count['negative']}
+EXCEPTIONS: {sum(count['exceptions'].values())}```"""
+        await interaction.channel.send(log)
+        await interaction.response.send_message("Done.", ephemeral=True)
+        return
+    
+    async def reset_stats(self, interaction: discord.Interaction):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        global count
+        count = copy.deepcopy(initial_count)
+        self.save_count()
+        await interaction.response.send_message("Done.", ephemeral=True)
 
     @discord.ext.tasks.loop(minutes=1)
     async def check_tier2(self):

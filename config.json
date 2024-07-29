@@ -1,5 +1,5 @@
 {
-    "version": "1.03 LIGHTNING BOLT EDITION",
+    "version": "1.04 mathematics edition",
     "debug": {
         "watched_message": 1243160802014269461,
         "given_role_t1": 1243160838593056808,
@@ -7,7 +7,12 @@
         "debug_channel": 1243218823059083286,
         "guild_id": 1243159672362631200,
         "automatic_role_t2_waittime": 1440,
-        "automatic_role_t2": false
+        "automatic_role_t2": false,
+        "grube_channel": 1267584831328485518,
+        "sticker_names": {
+            "positive": "gray cube",
+            "negative": "lilube"
+        }
     },
     "live": {
         "watched_message": 1243247452765552752,
@@ -16,6 +21,11 @@
         "debug_channel": 1243239439266877570,
         "guild_id": 496183179510677505,
         "automatic_role_t2_waittime": 1440,
-        "automatic_role_t2": false
+        "automatic_role_t2": false,
+        "grube_channel": 1246187335687606373,
+        "sticker_names": {
+            "positive": "gray cube",
+            "negative": "lilube"
+        }
     }
 }
