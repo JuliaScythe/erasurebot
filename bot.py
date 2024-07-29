@@ -125,7 +125,7 @@ class ErasureClient(discord.Client):
             return
         log = f"""```
 DIS OS REPORT {datetime.now().day:02}/{datetime.now().month:02}/10{datetime.now().year}
-RECIEVING GRUBE DATA...
+RECEIVING GRUBE DATA...
 
 {flavour}
 POSITIVE: {count['positive']}
