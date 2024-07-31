@@ -4,6 +4,9 @@ from discord import app_commands
 
 from datetime import datetime, timedelta
 import os, json, copy
+from typing import Literal
+
+import parse_ansi
 
 DEBUG = False
 VERSION = -1
@@ -16,13 +19,16 @@ intents.reactions = True # We want to listen for reactions
 intents.members = True
 intents.messages = True # Not message_content
 
-initial_count = {'positive': 0, 'negative': 0, 'exceptions': {}}
+initial_count = {'positive': 0, 'negative': 0, 'exceptions': 0, 'resets': 0}
 count = copy.deepcopy(initial_count)
 try:
     with open('grube.json', 'r') as f:
         count = json.load(f)
 except:
     pass # ignored: file not found or could not be read
+
+def disos_header():
+    return f"DIS OS REPORT {datetime.now().day:02}/{datetime.now().month:02}/11{datetime.now().year}"
 
 class ErasureClient(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -73,8 +79,7 @@ class ErasureClient(discord.Client):
                 elif sticker.name == config['sticker_names']['negative']:
                     count['negative'] += 1
                 else:
-                    new_val = count['exceptions'].get(sticker.url, 0) + 1
-                    count['exceptions'][sticker.url] = new_val
+                    count['exceptions'] += 1
             self.save_count()
     
     async def on_ready(self):
@@ -94,6 +99,12 @@ class ErasureClient(discord.Client):
 
         reset_grube_command = app_commands.Command(name='reset_stats', description="THE TOWER SHALL FALL", callback=self.reset_stats)
         self.tree.add_command(reset_grube_command, guild=self.guild)
+
+        stats_override_command = app_commands.Command(name='override_stats', description="THE TOWER SHALL Change?", callback=self.stats_override)
+        self.tree.add_command(stats_override_command, guild=self.guild)
+
+        echo_command = app_commands.Command(name='echo', description='Interpret the markup in this message as colours and relay it back, for testing purposes', callback=self.echo)
+        self.tree.add_command(echo_command, guild=self.guild)
 
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
@@ -123,14 +134,14 @@ class ErasureClient(discord.Client):
         if not interaction.permissions.manage_roles:
             await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
             return
-        log = f"""```
-DIS OS REPORT {datetime.now().day:02}/{datetime.now().month:02}/10{datetime.now().year}
-RECEIVING GRUBE DATA...
+        log = f"""```ansi
+{disos_header()}
+RECEIVING GRUBE[{parse_ansi.COLOR_YELLOW}{count['resets']}{parse_ansi.COLOR_RESET}] DATA...
 
-{flavour}
+{parse_ansi.parse_ansi(flavour)}
 POSITIVE: {count['positive']}
 NEGATIVE: {count['negative']}
-EXCEPTIONS: {sum(count['exceptions'].values())}```"""
+EXCEPTIONS: {parse_ansi.COLOR_RED}{count['exceptions']}{parse_ansi.COLOR_RESET}```"""
         await interaction.channel.send(log)
         await interaction.response.send_message("Done.", ephemeral=True)
         return
@@ -140,9 +151,33 @@ EXCEPTIONS: {sum(count['exceptions'].values())}```"""
             await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
             return
         global count
+        emergency_log = f"""```ansi
+{disos_header()}
+{parse_ansi.COLOR_RED}RESET TRIGGERED{parse_ansi.COLOR_RESET}
+COMMENCING EMERGENCY GRUBE BACKUP
+
+POSITIVE: {count['positive']}
+NEGATIVE: {count['negative']}
+EXCEPTIONS: {count['exceptions']}```"""
+        
+        old_resets = count['resets']
         count = copy.deepcopy(initial_count)
+        count['resets'] = old_resets + 1  # another one lost...
+
+        self.save_count()
+        await self.debug_message(emergency_log)
+        await interaction.response.send_message("Done.", ephemeral=True)
+
+    async def stats_override(self, interaction: discord.Interaction, field: Literal["positive", "negative", "exceptions", "resets"], value: int):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        count[field] = value
         self.save_count()
         await interaction.response.send_message("Done.", ephemeral=True)
+
+    async def echo(self, interaction: discord.Integration, message: str):
+        await interaction.response.send_message(f"```ansi\n{parse_ansi.parse_ansi(message)}\n```", ephemeral=True)
 
     @discord.ext.tasks.loop(minutes=1)
     async def check_tier2(self):
