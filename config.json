@@ -1,5 +1,5 @@
 {
-    "version": "1.05 colours edition",
+    "version": "1.06 discord doesn't provide event.member on reaction removal for some reason edition",
     "debug": {
         "watched_message": 1243160802014269461,
         "given_role_t1": 1243160838593056808,
@@ -12,7 +12,9 @@
         "sticker_names": {
             "positive": "gray cube",
             "negative": "lilube"
-        }
+        },
+        "event_role_message": 1286696133493522494,
+        "event_role": 1286696178292887625
     },
     "live": {
         "watched_message": 1243247452765552752,
@@ -26,6 +28,8 @@
         "sticker_names": {
             "positive": "gray cube",
             "negative": "lilube"
-        }
+        },
+        "event_role_message": 1286699568066461708,
+        "event_role": 1286699113961885808
     }
 }

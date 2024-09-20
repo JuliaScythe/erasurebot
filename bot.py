@@ -50,15 +50,27 @@ class ErasureClient(discord.Client):
     
     # We can't be guaranteed that the message we want to listen on will be in the cache, so we need to use the raw reaction add here.
     async def on_raw_reaction_add(self, event): 
-        if event.message_id != config['watched_message']: 
+        if event.message_id != config['watched_message'] and event.message_id != config['event_role_message']: 
             return # The reaction is on a different message
         member = event.member
 
-        if member.get_role(config['given_role_t1']) == None and member.get_role(config['given_role_t2']) == None: # If they don't already have the role, or the t2 version...
-            #role = self.guild.get_role(config['given_role_t1'])
-            # await self.debug_message("added role to " + member.display_name)
-            #await member.add_roles(role) # ...give it to them
-            await self.grant_role(member, config['given_role_t1'])
+        if event.message_id == config['watched_message']:
+            if member.get_role(config['given_role_t1']) == None and member.get_role(config['given_role_t2']) == None: # If they don't already have the role, or the t2 version...
+                #role = self.guild.get_role(config['given_role_t1'])
+                # await self.debug_message("added role to " + member.display_name)
+                #await member.add_roles(role) # ...give it to them
+                await self.grant_role(member, config['given_role_t1'])
+        elif event.message_id == config['event_role_message']:
+            if member.get_role(config['event_role']) == None:
+                await self.grant_role(member, config['event_role'])
+
+    async def on_raw_reaction_remove(self, event):
+        if event.message_id != config['event_role_message']: 
+            return
+        member = await self.guild.fetch_member(event.user_id)
+
+        if member.get_role(config['event_role']) != None:
+            await self.remove_role(member, config['event_role'])
 
     async def on_message(self, event):
         if event.author == client.user:
