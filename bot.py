@@ -1,3 +1,4 @@
+import time
 import discord
 from discord.ext import tasks
 from discord import app_commands
@@ -117,6 +118,9 @@ class ErasureClient(discord.Client):
 
         echo_command = app_commands.Command(name='echo', description='Interpret the markup in this message as colours and relay it back, for testing purposes', callback=self.echo)
         self.tree.add_command(echo_command, guild=self.guild)
+
+        dump_command = app_commands.Command(name='dump', description='Dump all messages between two message IDs, to a file on the server (ask juli to retrieve the file)', callback=self.dump_command)
+        self.tree.add_command(dump_command, guild=self.guild)
 
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
@@ -241,6 +245,42 @@ EXCEPTIONS: {count['exceptions']}```"""
                 await interaction.response.send_message(f"<:yeslord:1172009353981734962> Verified {member.display_name} successfully.", ephemeral=True)
             else:
                 await interaction.response.send_message(f"<:salamislices:1150434195538182285> Failed to verify {member.display_name}, see log for details.", ephemeral=True)
+    
+    async def dump_command(self, interaction: discord.Interaction, start: str, end: str):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+
+        # first, get the channel the messages are in (i.e. the channel the command was sent from)
+        channel = interaction.channel
+        start_msg = await channel.fetch_message(int(start))
+        end_msg = await channel.fetch_message(int(end))
+        end_stamp = end_msg.created_at
+
+        await interaction.response.send_message(f"Recording history... (from {start_msg.jump_url} to {end_msg.jump_url}). This may take some time.")
+        filename = str(int(time.time()))
+        counter = 0
+        last_msg = start_msg
+        with open(filename, mode='w') as f:
+            done = False
+            while( not done):
+                done = True
+                async for msg in channel.history(after=last_msg, before=end_msg):
+                    done = False
+                    counter += 1
+                    if counter % 500 == 0:
+                        await channel.send(f"{counter}. {msg.jump_url}")
+                    json.dump({
+                        "content": msg.content,
+                        "author": msg.author.display_name,
+                        "author_username": msg.author.name,
+                        "author_colour": msg.author.colour.to_rgb(),
+                        "time": time.mktime(msg.created_at.timetuple()),
+                        "attachments": str(msg.attachments)
+                    }, f)
+                    f.write("\n")
+                    last_msg = msg
+        await channel.send("Done.")
 
 client = ErasureClient(intents=intents)
 
