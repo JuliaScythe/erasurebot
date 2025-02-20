@@ -9,7 +9,7 @@ from typing import Literal
 
 import parse_ansi
 
-DEBUG = False
+DEBUG = True
 VERSION = -1
 config = None
 
@@ -122,6 +122,9 @@ class ErasureClient(discord.Client):
         dump_command = app_commands.Command(name='dump', description='Dump all messages between two message IDs, to a file on the server (ask juli to retrieve the file)', callback=self.dump_command)
         self.tree.add_command(dump_command, guild=self.guild)
 
+        proxy_command = app_commands.Command(name='proxy', description="proxy a message through erasurebot", callback=self.proxy)
+        self.tree.add_command(proxy_command, guild=self.guild)
+
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
         channel = self.get_channel(config['debug_channel'])
@@ -137,6 +140,17 @@ class ErasureClient(discord.Client):
         self.automute = True
         self.automute_channel = interaction.channel_id
         await interaction.response.send_message(":cloud_lightning:")
+    
+    async def proxy(self, interaction: discord.Interaction, payload: str):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        if len(payload) > 4000:
+            await interaction.response.send_message(f"Message too long, I can't break discord's 4K character limit. (Your message was {len(payload)} characters)", ephemeral=True)
+            return
+
+        await interaction.channel.send(payload.replace("\\n","\n"))
+        await interaction.response.send_message("<:fire2:1341871545517084803>", ephemeral=True)
 
     async def disable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
