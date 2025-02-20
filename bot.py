@@ -9,7 +9,7 @@ from typing import Literal
 
 import parse_ansi
 
-DEBUG = True
+DEBUG = False
 VERSION = -1
 config = None
 
