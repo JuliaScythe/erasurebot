@@ -14,7 +14,11 @@
             "negative": "lilube"
         },
         "event_role_message": 1286696133493522494,
-        "event_role": 1286696178292887625
+        "event_role": 1286696178292887625,
+        "afd_role": 1355935077728653634,
+        "afd_react_message": 1355937511225950481,
+        "afd_green_role": 1355937407295426743,
+        "afd_orange_role": 1355937438026956840
     },
     "live": {
         "watched_message": 1243247452765552752,
@@ -30,6 +34,10 @@
             "negative": "lilube"
         },
         "event_role_message": 1286699568066461708,
-        "event_role": 1286699113961885808
+        "event_role": 1286699113961885808,
+        "afd_role": 1355934822312316928,
+        "afd_react_message": 1355934408795754629,
+        "afd_green_role": 1355934746953253036,
+        "afd_orange_role": 1355934842612875556
     }
 }

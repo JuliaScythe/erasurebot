@@ -22,6 +22,10 @@ intents.messages = True # Not message_content
 
 initial_count = {'positive': 0, 'negative': 0, 'exceptions': 0, 'resets': 0}
 count = copy.deepcopy(initial_count)
+
+PASSWORD = 1234 # TODO change me to the real password :3
+
+
 try:
     with open('grube.json', 'r') as f:
         count = json.load(f)
@@ -51,7 +55,7 @@ class ErasureClient(discord.Client):
     
     # We can't be guaranteed that the message we want to listen on will be in the cache, so we need to use the raw reaction add here.
     async def on_raw_reaction_add(self, event): 
-        if event.message_id != config['watched_message'] and event.message_id != config['event_role_message']: 
+        if event.message_id not in {config['watched_message'], config['event_role_message'], config['afd_react_message']}: 
             return # The reaction is on a different message
         member = event.member
 
@@ -64,14 +68,33 @@ class ErasureClient(discord.Client):
         elif event.message_id == config['event_role_message']:
             if member.get_role(config['event_role']) == None:
                 await self.grant_role(member, config['event_role'])
+        elif event.message_id == config['afd_react_message']:
+            emoji = event.emoji
+            if emoji.name == '🟢':
+                if member.get_role(config['afd_green_role']) == None:
+                    await self.grant_role(member, config['afd_green_role'])
+            elif emoji.name == '🟠':
+                if member.get_role(config['afd_orange_role']) == None:
+                    await self.grant_role(member, config['afd_orange_role'])
+
 
     async def on_raw_reaction_remove(self, event):
-        if event.message_id != config['event_role_message']: 
+        if event.message_id not in {config['event_role_message'], config['afd_react_message']}: 
             return
         member = await self.guild.fetch_member(event.user_id)
 
-        if member.get_role(config['event_role']) != None:
-            await self.remove_role(member, config['event_role'])
+        if event.message_id == config['event_role_message']:
+            if member.get_role(config['event_role']) != None:
+                await self.remove_role(member, config['event_role'])
+        elif event.message_id == config['afd_react_message']:
+            emoji = event.emoji
+            if emoji.name == '🟢':
+                if member.get_role(config['afd_green_role']) != None:
+                    await self.remove_role(member, config['afd_green_role'])
+            elif emoji.name == '🟠':
+                if member.get_role(config['afd_orange_role']) != None:
+                    await self.remove_role(member, config['afd_orange_role'])
+
 
     async def on_message(self, event):
         if event.author == client.user:
@@ -125,6 +148,9 @@ class ErasureClient(discord.Client):
         proxy_command = app_commands.Command(name='proxy', description="proxy a message through erasurebot", callback=self.proxy)
         self.tree.add_command(proxy_command, guild=self.guild)
 
+        betatest_command = app_commands.Command(name='magic', description="You should have a password.", callback=self.betatest_entry)
+        self.tree.add_command(betatest_command, guild=self.guild)
+
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
         channel = self.get_channel(config['debug_channel'])
@@ -133,6 +159,14 @@ class ErasureClient(discord.Client):
             version_str += ' [DEBUG]'
         await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
+    async def betatest_entry(self, interaction: discord.Interaction, magic: int):
+        if magic == PASSWORD:
+            await self.grant_role(interaction.user, config["afd_role"])
+            await interaction.response.send_message("Access Granted.", ephemeral=True)
+        else:
+            await interaction.user.timeout(timedelta(minutes=10))
+            await interaction.response.send_message("Access Denied. 🌩.")
+
     async def enable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
             await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
