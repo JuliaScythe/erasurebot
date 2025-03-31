@@ -23,7 +23,7 @@ intents.messages = True # Not message_content
 initial_count = {'positive': 0, 'negative': 0, 'exceptions': 0, 'resets': 0}
 count = copy.deepcopy(initial_count)
 
-PASSWORD = 1234 # TODO change me to the real password :3
+PASSWORDS = {1234} # TODO change me to the real password :3
 
 
 try:
@@ -160,7 +160,7 @@ class ErasureClient(discord.Client):
         await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
     async def betatest_entry(self, interaction: discord.Interaction, magic: int):
-        if magic == PASSWORD:
+        if magic in PASSWORDS:
             await self.grant_role(interaction.user, config["afd_role"])
             await interaction.response.send_message("Access Granted.", ephemeral=True)
         else:
