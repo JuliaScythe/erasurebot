@@ -151,6 +151,13 @@ class ErasureClient(discord.Client):
         betatest_command = app_commands.Command(name='magic', description="You should have a password.", callback=self.betatest_entry)
         self.tree.add_command(betatest_command, guild=self.guild)
 
+        pluralfreeze_command = app_commands.Command(name='pk_freeze', description="Prevent PluralKit from viewing channels.", callback=self.pk_freeze)
+        self.tree.add_command(pluralfreeze_command, guild=self.guild)
+
+        pluralunfreeze_command = app_commands.Command(name='pk_unfreeze', description="Grant PluralKit channel viewing perms.", callback=self.pk_unfreeze)
+        self.tree.add_command(pluralunfreeze_command, guild=self.guild)
+
+
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
         channel = self.get_channel(config['debug_channel'])
@@ -329,6 +336,26 @@ EXCEPTIONS: {count['exceptions']}```"""
                     f.write("\n")
                     last_msg = msg
         await channel.send("Done.")
+
+    async def pk_freeze(self, interaction: discord.Interaction):
+        pluralkit = await self.guild.fetch_member(config['pluralkit_member'])  
+        await remove_role(pluralkit, config['given_role_t2']) # remove Verified
+
+        perms = self.guild.get_role(config['pluralkit_role']).permissions 
+        perms.view_channel = False
+        await self.guild.get_role(config['pluralkit_role']).edit(permissions=perms)
+
+        await interaction.channel.send("❄️ PluralKit frozen.")
+
+    async def pk_unfreeze(self, interaction: discord.Interaction):
+        pluralkit = await self.guild.fetch_member(config['pluralkit_member'])  
+        await add_role(pluralkit, config['given_role_t2']) # add Verified
+        
+        perms = self.guild.get_role(config['pluralkit_role']).permissions
+        perms.view_channel = True
+        await self.guild.get_role(config['pluralkit_role']).edit(permissions=perms)
+
+        await interaction.channel.send("🔥 PluralKit revived.")
 
 client = ErasureClient(intents=intents)
 
