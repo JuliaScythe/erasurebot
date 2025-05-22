@@ -339,7 +339,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
     async def pk_freeze(self, interaction: discord.Interaction):
         pluralkit = await self.guild.fetch_member(config['pluralkit_member'])  
-        await remove_role(pluralkit, config['given_role_t2']) # remove Verified
+        await self.remove_role(pluralkit, config['given_role_t2']) # remove Verified
 
         perms = self.guild.get_role(config['pluralkit_role']).permissions 
         perms.view_channel = False
@@ -349,7 +349,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
     async def pk_unfreeze(self, interaction: discord.Interaction):
         pluralkit = await self.guild.fetch_member(config['pluralkit_member'])  
-        await add_role(pluralkit, config['given_role_t2']) # add Verified
+        await self.grant_role(pluralkit, config['given_role_t2']) # add Verified
         
         perms = self.guild.get_role(config['pluralkit_role']).permissions
         perms.view_channel = True
