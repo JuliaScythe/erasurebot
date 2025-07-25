@@ -154,8 +154,6 @@ class ErasureClient(discord.Client):
         proxy_command = app_commands.Command(name='proxy', description="proxy a message through erasurebot", callback=self.proxy)
         self.tree.add_command(proxy_command, guild=self.guild)
 
-        betatest_command = app_commands.Command(name='magic', description="You should have a password.", callback=self.betatest_entry)
-        self.tree.add_command(betatest_command, guild=self.guild)
 
         pluralfreeze_command = app_commands.Command(name='pk_freeze', description="Prevent PluralKit from viewing channels.", callback=self.pk_freeze)
         self.tree.add_command(pluralfreeze_command, guild=self.guild)
@@ -175,13 +173,6 @@ class ErasureClient(discord.Client):
             version_str += ' [DEBUG]'
         await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
-    async def betatest_entry(self, interaction: discord.Interaction, magic: int):
-        if magic in PASSWORDS:
-            await self.grant_role(interaction.user, config["afd_role"])
-            await interaction.response.send_message("Access Granted.", ephemeral=True)
-        else:
-            await interaction.user.timeout(timedelta(minutes=10))
-            await interaction.response.send_message("Access Denied. 🌩.")
 
     async def enable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
