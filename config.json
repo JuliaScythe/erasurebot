@@ -1,5 +1,5 @@
 {
-    "version": "1.08",
+    "version": "1.09 erasure has eyes to see branes with",
     "debug": {
         "watched_message": 1243160802014269461,
         "given_role_t1": 1243160838593056808,
@@ -18,7 +18,13 @@
         "afd_role": 1355935077728653634,
         "afd_react_message": 1355937511225950481,
         "afd_green_role": 1355937407295426743,
-        "afd_orange_role": 1355937438026956840
+        "afd_orange_role": 1355937438026956840,
+        "spoiler_tiers_map": {
+            "general": 0,
+            "yay": 1,
+            "bot-log": 2,
+            "the-grube-channel": 4
+        }
     },
     "live": {
         "watched_message": 1243247452765552752,
@@ -40,6 +46,19 @@
         "afd_green_role": 1355934746953253036,
         "afd_orange_role": 1355934842612875556,
         "pluralkit_member": 466378653216014359,
-        "pluralkit_role": 1371485462518038654
+        "pluralkit_role": 1371485462518038654,
+        "spoiler_tiers_map": {
+            "vs-general": 0,
+            "vs-spoilers": 1,
+            "vs-super-spoilers": 1,
+            "vs-super-ultra-mega-spoilers": 2,
+            "vs-postgame": 3,
+            "endless-void": 3,
+            "vs-wiki": 3,
+            "after-everything": 4,
+            "text-voice": 3,
+            "text-voice-2": 3,
+            "staff-channel": 3
+        }
     }
 }

@@ -4,12 +4,18 @@ from discord.ext import tasks
 from discord import app_commands
 
 from datetime import datetime, timedelta
-import os, json, copy
-from typing import Literal
+import os, json, copy, socket
+from typing import Literal, Optional, BinaryIO
 
 import parse_ansi
+import roomfetch
 
-DEBUG = False
+
+if socket.gethostname() == "erasurebot":
+    DEBUG = False
+else:
+    DEBUG = True
+
 VERSION = -1
 config = None
 
@@ -156,6 +162,9 @@ class ErasureClient(discord.Client):
 
         pluralunfreeze_command = app_commands.Command(name='pk_unfreeze', description="Grant PluralKit channel viewing perms.", callback=self.pk_unfreeze)
         self.tree.add_command(pluralunfreeze_command, guild=self.guild)
+
+        floor_command = app_commands.Command(name="floor", description="fetch an image of a void stranger floor", callback=self.floor)
+        self.tree.add_command(floor_command, guild=self.guild)
 
 
         self.tree.copy_global_to(guild=self.guild)
@@ -356,6 +365,24 @@ EXCEPTIONS: {count['exceptions']}```"""
         await self.guild.get_role(config['pluralkit_role']).edit(permissions=perms)
 
         await interaction.channel.send("🔥 PluralKit revived.")
+
+    async def floor(self, interaction: discord.Interaction, floor: str):
+        # WARNING: THIS COMMAND IS USABLE BY ANYONE
+        channel = interaction.channel
+        if isinstance(channel, discord.Thread):
+            channel = channel.parent # threads inherit spoiler tiers of their parents
+        img: Optional[BytesIO] = None
+        spoiler_tier : int = 0
+        if channel.name in config["spoiler_tiers_map"]:
+            spoiler_tier = config["spoiler_tiers_map"][channel.name]
+            img = roomfetch.get_floor_image(floor, spoiler_tier)
+        if img is None:
+            await interaction.response.send_message(":vsNo: floor not found or permitted in this channel / spoiler level", ephemeral=True)
+        else:
+            prefix = "SPOILER_" if spoiler_tier != 4 else "" # for some reason this is how discord decides if an image has a spoiler tag or not
+            await interaction.response.send_message(roomfetch.normalise_room_name(floor), file=discord.File(img, prefix + floor + ".png"))
+            
+
 
 client = ErasureClient(intents=intents)
 
