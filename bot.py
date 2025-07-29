@@ -370,7 +370,7 @@ EXCEPTIONS: {count['exceptions']}```"""
         if img is None:
             await interaction.response.send_message("<:vsNo:1277638286336200788> floor not found or permitted in this channel / spoiler level", ephemeral=True)
         else:
-            prefix = "SPOILER_" if spoiler_tier != 4 else "" # for some reason this is how discord decides if an image has a spoiler tag or not
+            prefix = "SPOILER_" if spoiler_tier != 5 else "" # for some reason this is how discord decides if an image has a spoiler tag or not
             await interaction.response.send_message(roomfetch.normalise_room_name(floor), file=discord.File(img, prefix + floor + ".png"))
             
 

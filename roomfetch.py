@@ -5,9 +5,11 @@ import os.path
 # Spoiler levels:
 # 0: can be posted anywhere, main branes, white void, funhouse, etc. (since you can go there at any time)
 # 1: hard mode, hard mode ending, only allowed to be posted in >=spoilers-vs
-# 2: dis, only allowed to be posted in >=super-ultra-mega-spoilers
-# 3: devend, EX, only allowed in postgame or ae
-#
+# 2: funhouse, >=super-spoilers
+# 3: dis, only allowed to be posted in >=super-ultra-mega-spoilers
+# 4: devend, EX, only allowed in postgame or ae
+# 5: that but don't spoiler tag it
+# 
 # cif's floors don't get their own level because there is very little that is unique to cif's run that couldn't be seen beforehand
 # the spoiler levels correspond to folders in the `floors` directory
 

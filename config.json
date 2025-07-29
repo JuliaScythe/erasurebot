@@ -23,7 +23,7 @@
             "general": 0,
             "yay": 1,
             "bot-log": 2,
-            "the-grube-channel": 4
+            "the-grube-channel": 5
         }
     },
     "live": {
@@ -50,16 +50,16 @@
         "spoiler_tiers_map": {
             "vs-general": 0,
             "vs-spoilers": 1,
-            "vs-super-spoilers": 1,
-            "vs-super-ultra-mega-spoilers": 2,
-            "vs-postgame": 3,
-            "endless-void": 3,
-            "vs-wiki": 3,
-            "after-everything": 4,
-            "text-voice": 3,
-            "text-voice-2": 3,
-            "staff-channel": 4,
-            "the-zan-pastures": 4
+            "vs-super-spoilers": 2,
+            "vs-super-ultra-mega-spoilers": 3,
+            "vs-postgame": 4,
+            "endless-void": 4,
+            "vs-wiki": 4,
+            "after-everything": 5,
+            "text-voice": 4,
+            "text-voice-2": 4,
+            "staff-channel": 5,
+            "the-zan-pastures": 5
         }
     }
 }
