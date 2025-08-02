@@ -164,6 +164,8 @@ class ErasureClient(discord.Client):
         floor_command = app_commands.Command(name="floor", description="fetch an image of a void stranger floor", callback=self.floor)
         self.tree.add_command(floor_command, guild=self.guild)
 
+        slowmode_command = app_commands.Command(name="slowmode", description="set slowmode in the current channel/thread", callback=self.slowmode)
+        self.tree.add_command(slowmode_command, guild=self.guild)
 
         self.tree.copy_global_to(guild=self.guild)
         await self.tree.sync(guild=self.guild)
@@ -173,6 +175,12 @@ class ErasureClient(discord.Client):
             version_str += ' [DEBUG]'
         await channel.send(f"Booting ErasureOS {version_str}...\n\nConfig:```json\n{json.dumps(config, indent=2)}```")
         
+    async def slowmode(self, interaction: discord.Interaction, amount: int):
+        if not interaction.permissions.manage_roles:
+            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            return
+        await interaction.channel.edit(slowmode_delay = amount)
+        await interaction.response.send_message("Done.", ephemeral=True)
 
     async def enable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
