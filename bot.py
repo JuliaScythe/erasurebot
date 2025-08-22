@@ -365,7 +365,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
         await interaction.channel.send("🔥 PluralKit revived.")
 
-    async def floor(self, interaction: discord.Interaction, floor: str, whisper=False):
+    async def floor(self, interaction: discord.Interaction, floor: str, whisper: bool=False):
         # WARNING: THIS COMMAND IS USABLE BY ANYONE
         channel = interaction.channel
         if isinstance(channel, discord.Thread):
