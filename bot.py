@@ -365,7 +365,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
         await interaction.channel.send("🔥 PluralKit revived.")
 
-    async def floor(self, interaction: discord.Interaction, floor: str):
+    async def floor(self, interaction: discord.Interaction, floor: str, whisper=False):
         # WARNING: THIS COMMAND IS USABLE BY ANYONE
         channel = interaction.channel
         if isinstance(channel, discord.Thread):
@@ -379,7 +379,7 @@ EXCEPTIONS: {count['exceptions']}```"""
             await interaction.response.send_message("<:vsNo:1277638286336200788> floor not found or permitted in this channel / spoiler level", ephemeral=True)
         else:
             prefix = "SPOILER_" if spoiler_tier != 5 else "" # for some reason this is how discord decides if an image has a spoiler tag or not
-            await interaction.response.send_message(roomfetch.normalise_room_name(floor), file=discord.File(img, prefix + floor + ".png"))
+            await interaction.response.send_message(roomfetch.normalise_room_name(floor), file=discord.File(img, prefix + floor + ".png"), ephemeral=whisper)
             
 
 
