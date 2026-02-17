@@ -177,14 +177,14 @@ class ErasureClient(discord.Client):
         
     async def slowmode(self, interaction: discord.Interaction, amount: int):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         await interaction.channel.edit(slowmode_delay = amount)
         await interaction.response.send_message("Done.", ephemeral=True)
 
     async def enable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         self.automute = True
         self.automute_channel = interaction.channel_id
@@ -192,7 +192,7 @@ class ErasureClient(discord.Client):
     
     async def proxy(self, interaction: discord.Interaction, payload: str):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         if len(payload) > 4000:
             await interaction.response.send_message(f"Message too long, I can't break discord's 4K character limit. (Your message was {len(payload)} characters)", ephemeral=True)
@@ -203,7 +203,7 @@ class ErasureClient(discord.Client):
 
     async def disable_automute(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         self.automute = False
         self.automute_channel = None
@@ -211,7 +211,7 @@ class ErasureClient(discord.Client):
     
     async def grube_stats(self, interaction: discord.Interaction, flavour: str="THE TOWER STANDS TALL"):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         log = f"""```ansi
 {disos_header()}
@@ -227,7 +227,7 @@ EXCEPTIONS: {parse_ansi.COLOR_RED}{count['exceptions']}{parse_ansi.COLOR_RESET}`
     
     async def reset_stats(self, interaction: discord.Interaction):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         global count
         emergency_log = f"""```ansi
@@ -249,7 +249,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
     async def stats_override(self, interaction: discord.Interaction, field: Literal["positive", "negative", "exceptions", "resets"], value: int):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         count[field] = value
         self.save_count()
@@ -298,7 +298,7 @@ EXCEPTIONS: {count['exceptions']}```"""
 
     async def verify(self, interaction: discord.Interaction, member: discord.Member):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         if member.get_role(config['given_role_t2']) != None:
             await interaction.response.send_message(f"<:i_know_what_you_are:1150490164909592587> {member.display_name} is already verified!", ephemeral=True)
@@ -311,7 +311,7 @@ EXCEPTIONS: {count['exceptions']}```"""
     
     async def dump_command(self, interaction: discord.Interaction, start: str, end: str):
         if not interaction.permissions.manage_roles:
-            await interaction.response.send_message(f"<:disgrayced:1150932813978280057> Permission denied.", ephemeral=True)
+            await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
 
         # first, get the channel the messages are in (i.e. the channel the command was sent from)
