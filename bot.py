@@ -191,7 +191,7 @@ class ErasureClient(discord.Client):
         await interaction.response.send_message(":cloud_lightning:")
     
     async def proxy(self, interaction: discord.Interaction, payload: str):
-        if not interaction.permissions.manage_roles:
+        if not (interaction.permissions.manage_roles or interaction.user.id == config['gooey_id']):
             await interaction.response.send_message(f"<:disgrayced:1408465331382652959> Permission denied.", ephemeral=True)
             return
         if len(payload) > 4000:

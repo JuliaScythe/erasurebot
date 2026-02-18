@@ -24,7 +24,8 @@
             "yay": 1,
             "bot-log": 2,
             "the-grube-channel": 5
-        }
+        },
+        "gooey_id": 292438563205677056
     },
     "live": {
         "watched_message": 1243247452765552752,
@@ -60,6 +61,7 @@
             "text-voice-2": 4,
             "staff-channel": 5,
             "the-zan-pastures": 5
-        }
+        },
+        "gooey_id": 292438563205677056
     }
 }
