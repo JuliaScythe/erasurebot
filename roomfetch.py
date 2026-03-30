@@ -26,7 +26,7 @@ def get_floor_image(name: str, spoilerlvl: int) -> Optional[BinaryIO]:
     for currlvl in range(spoilerlvl+1):
         image_path = os.path.join(BASE_PATH, str(currlvl), name)
 
-        if (os.path.exists(image_path) and os.path.commonprefix([image_path, BASE_PATH]) == BASE_PATH):
+        if (os.path.exists(image_path) and os.path.commonpath([image_path, BASE_PATH]) == BASE_PATH):
             # check the file exists and that directory traversal isn't going on (it wouldn't be great to let someone request the discord token as a key)
             return open(image_path, mode="br")
         

@@ -1,5 +1,5 @@
 {
-    "version": "1.12 void stranger sx mod google dot com",
+    "version": "1.12.1 void stranger sx mod (HOTFIX)",
     "debug": {
         "watched_message": 1243160802014269461,
         "given_role_t1": 1243160838593056808,
@@ -62,7 +62,7 @@
             "text-voice-3": 4,
             "staff-channel": 5,
             "the-zan-pastures": 5,
-	    "erasure-log": 5
+            "erasure-log": 5
         },
         "gooey_id": 292438563205677056
     }
