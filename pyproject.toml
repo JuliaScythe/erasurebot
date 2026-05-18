@@ -1,0 +1,10 @@
+[project]
+name = "erasurebot"
+version = "0.1.0"
+description = "A discord bot for administrating the System Erasure server"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "discord>=2.3.2",
+    "pydantic>=2.13.4",
+]
