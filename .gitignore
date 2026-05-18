@@ -1,3 +1,5 @@
 secret.token
 grube.json
 __pycache__/
+.direnv
+.venv
